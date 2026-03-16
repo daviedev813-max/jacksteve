@@ -8,7 +8,7 @@ import {
 } from "../controllers/fleetController.js";
 
 // Security Gatekeepers
-import { protect, authorize } from "../middleware/authMiddleware.js";
+import { protect, authorize } from "../Middleware/authMiddleware.js";
 
 const router = express.Router();
 

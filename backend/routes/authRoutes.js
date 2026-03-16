@@ -9,7 +9,7 @@ import {
 } from "../controllers/authController.js";
 
 // Security & Validation Gatekeepers
-import { validateAuth } from "../middleware/validationMiddleware.js";
+import { validateAuth } from "../Middleware/validationMiddleware.js";
 
 const router = express.Router();
 

@@ -8,9 +8,9 @@ import {
   assignBackhaulLoad,
 } from "../controllers/supplyController.js";
 
-import { protect, authorize } from "../middleware/authMiddleware.js";
+import { protect, authorize } from "../Middleware/authMiddleware.js";
 // Note: Ensure your validation middleware matches the new Schema fields
-import { validateSupplyRequest } from "../middleware/validationMiddleware.js";
+import { validateSupplyRequest } from "../Middleware/validationMiddleware.js";
 
 const router = express.Router();
 

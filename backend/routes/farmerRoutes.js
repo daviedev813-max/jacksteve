@@ -6,8 +6,8 @@ import {
 } from "../controllers/farmerController.js";
 
 // Import your Security Gatekeepers
-import { protect, authorize } from "../middleware/authMiddleware.js";
-import { validateFarmer } from "../middleware/validationMiddleware.js";
+import { protect, authorize } from "../Middleware/authMiddleware.js";
+import { validateFarmer } from "../Middleware/validationMiddleware.js";
 
 const router = express.Router();
 

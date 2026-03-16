@@ -5,8 +5,8 @@ import {
 } from "../controllers/contactController.js";
 
 // Security Gatekeepers
-import { protect, authorize } from "../middleware/authMiddleware.js";
-import { validateContact } from "../middleware/validationMiddleware.js";
+import { protect, authorize } from "../Middleware/authMiddleware.js";
+import { validateContact } from "../Middleware/validationMiddleware.js";
 
 const router = express.Router();
 

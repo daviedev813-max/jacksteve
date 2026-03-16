@@ -4,7 +4,7 @@ import dotenv from "dotenv"
 
 import connectDB from "./config/db.js"
 import { logger } from "./utils/logger.js"
-import { notFound, errorHandler } from "./middleware/errorMiddleware.js"
+import { notFound, errorHandler } from "./Middleware/errorMiddleware.js"
 
 /* 🛰️ ROUTE IMPORTS */
 import authRoutes from "./routes/authRoutes.js"       // [NEW] Security Terminal
