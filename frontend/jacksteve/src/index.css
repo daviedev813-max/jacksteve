@@ -1,0 +1,38 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "jacksteve";
+
+  /* CABIN ORANGE: Based on the lower trim & door accents. 
+     Represents the 'Engine' of the business. */
+  --color-primary: #EB5E28; 
+  --color-primary-content: #ffffff;
+
+  /* CONTAINER GREEN: A direct match for the vibrant green on that trailer. 
+     Represents the 'Harvest/Growth'. */
+  --color-secondary: #76B947; 
+  --color-secondary-content: #1A1C1E;
+
+  /* CHASSIS CHARCOAL: From the wheels and undercarriage. 
+     Deep, stable, and professional. */
+  --color-neutral: #252422; 
+  --color-neutral-content: #FFFCF2;
+
+  /* ROAD GREY: A subtle off-white/grey base inspired by the asphalt 
+     and the white section of the container. */
+  --color-base-100: #FFFCF2; 
+  --color-base-200: #EBEDEF; 
+  --color-base-300: #CCC5B9; 
+
+  /* ALERT COLORS: High-vis inspired */
+  --color-info: #2563EB;
+  --color-success: #76B947;
+  --color-warning: #FBC02D; /* Maize Yellow */
+  --color-error: #B91C1C;
+
+  /* LOGISTICS UI TUNING */
+  --radius-selector: 0.75rem; /* Slightly more 'boxed' like a container */
+  --radius-field: 0.4rem;
+  --border-btn: 2px; /* Thicker borders for an 'industrial' feel */
+}
