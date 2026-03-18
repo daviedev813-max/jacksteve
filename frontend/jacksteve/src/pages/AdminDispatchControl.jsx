@@ -9,6 +9,8 @@ import {
   useSensors
 } from '@dnd-kit/core';
 import axios from 'axios';
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 
 // --- 🏗️ DRAGGABLE REQUEST CARD ---
 const DraggableRequest = ({ task, isOverlay }) => {
@@ -100,8 +102,8 @@ const AdminDispatchControl = () => {
     try {
       const token = localStorage.getItem("token");
       const [reqRes, truckRes] = await Promise.all([
-        axios.get("/api/farmers", { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get("/api/fleet/status", { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${API_BASE_URL}/api/farmers`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API_BASE_URL}/api/fleet/status`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       setRequests(reqRes.data.data.filter(r => r.status === 'PENDING_PICKUP' || r.status === 'PENDING_DISPATCH'));
       setTrucks(truckRes.data.data.filter(t => t.status === 'IDLE'));

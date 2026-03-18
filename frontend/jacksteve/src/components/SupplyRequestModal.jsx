@@ -1,5 +1,6 @@
 import { useState, forwardRef } from "react";
 import axios from "axios";
+const API_BASE_URL = "https://jacksteve.onrender.com";
 
 const SupplyRequestModal = forwardRef(({ onOrderLogged }, ref) => {
   const [activeTab, setActiveTab] = useState("miller");
@@ -42,7 +43,7 @@ const SupplyRequestModal = forwardRef(({ onOrderLogged }, ref) => {
     try {
       const token = localStorage.getItem("token");
       const endpoint =
-        activeTab === "miller" ? "/api/supply/request" : "/api/farmers/request";
+        activeTab === "miller" ? `${API_BASE_URL}/api/supply/request` : `${API_BASE_URL}/api/farmers/request`;
 
       const res = await axios.post(endpoint, payload, {
         headers: { Authorization: `Bearer ${token}` },

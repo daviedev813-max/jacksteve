@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+const API_BASE_URL = "https://jacksteve.onrender.com";
 
 const MyHarvests = () => {
   const [harvests, setHarvests] = useState([]);
@@ -10,7 +11,7 @@ const MyHarvests = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("/api/farmers", {
+        const res = await axios.get(`${API_BASE_URL}/api/farmers`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setHarvests(res.data.data);

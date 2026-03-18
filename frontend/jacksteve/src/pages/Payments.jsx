@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 
 const Payments = () => {
   const [transactions, setTransactions] = useState([]);
@@ -10,7 +12,7 @@ const Payments = () => {
     const fetchFinancials = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("/api/farmers", {
+        const res = await axios.get(`${API_BASE_URL}/api/farmers`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = res.data.data;

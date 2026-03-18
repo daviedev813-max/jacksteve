@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
+
 // 1. Define the missing PageWrapper here
 const PageWrapper = ({ children }) => (
   <motion.div
@@ -23,7 +26,7 @@ const UnitHealth = () => {
       try {
         const token = localStorage.getItem("token");
         // Update this endpoint to match your truck/fleet route
-        const res = await axios.get("/api/supply", {
+        const res = await axios.get(`${API_BASE_URL}/api/supply`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         

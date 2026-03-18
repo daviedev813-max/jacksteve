@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 
 const BulkProcurement = () => {
   const [procurements, setProcurements] = useState([]);
@@ -12,7 +14,7 @@ const BulkProcurement = () => {
     const fetchProcurementData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("/api/supply", {
+        const res = await axios.get(`${API_BASE_URL}/api/supply`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 
 const Maintenance = () => {
   const [fleetHealth, setFleetHealth] = useState([]);
@@ -11,7 +13,7 @@ const Maintenance = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("/api/fleet/status", {
+        const res = await axios.get(`${API_BASE_URL}/api/fleet/status`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setFleetHealth(res.data.data);

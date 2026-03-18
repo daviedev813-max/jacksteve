@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom"; // [ADDED useLocation]
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
-
+const API_BASE_URL = "https://jacksteve.onrender.com";
 const AuthPage = ({ user, onLogin, onLogout }) => {
   const [view, setView] = useState("login");
   const [role, setRole] = useState("farmer");
@@ -50,13 +50,13 @@ const AuthPage = ({ user, onLogin, onLogout }) => {
     try {
       let response;
       if (view === "login") {
-        response = await axios.post("/api/auth/login", {
+        response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
           email: formData.email,
           password: formData.password,
           role: role.toUpperCase(), // Ensure role is sent for integrity check
         });
       } else if (view === "register") {
-        await axios.post("/api/auth/register", {
+        await axios.post(`${API_BASE_URL}/api/auth/register`, {
           ...formData,
           role: role.toUpperCase(),
         });
@@ -65,12 +65,12 @@ const AuthPage = ({ user, onLogin, onLogout }) => {
         setLoading(false);
         return;
       } else if (view === "verify") {
-        response = await axios.post("/api/auth/verify", {
+        response = await axios.post(`${API_BASE_URL}/api/auth/verify`, {
           email: formData.email,
           otp: formData.otp,
         });
       } else if (view === "forgot") {
-        await axios.post("/api/auth/forgot-password", {
+        await axios.post(`${API_BASE_URL}/api/auth/forgot-password`, {
           email: formData.email,
         });
         setSuccessMsg("RESET TOKEN DISPATCHED. REDIRECTING TO RESET TERMINAL...");
@@ -80,7 +80,7 @@ const AuthPage = ({ user, onLogin, onLogout }) => {
         return;
       } else if (view === "reset") {
         // [UPDATED]: Matches the router.put("/reset-password/:token") path
-        response = await axios.put(`/api/auth/reset-password/${formData.resetToken}`, {
+        response = await axios.put(`${API_BASE_URL}/api/auth/reset-password/${formData.resetToken}`, {
           password: formData.password,
         });
         setSuccessMsg("PASSKEY UPDATED. RE-INITIALIZING LOGIN...");

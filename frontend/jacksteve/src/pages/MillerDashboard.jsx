@@ -5,6 +5,8 @@ import axios from "axios";
 // 1. IMPORT SUB-COMPONENTS
 import MillerInvoice from "../components/documents/MillerInvoice";
 import SupplyRequestModal from "../components/SupplyRequestModal";
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 
 const MillerDashboard = () => {
   const [activeOrders, setActiveOrders] = useState([]);
@@ -24,29 +26,30 @@ const MillerDashboard = () => {
 
   // ✅ STABILIZED DATA FETCHING
   const fetchMillerData = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      
-      const res = await axios.get("/api/supply", config);
-      const data = res.data.data || [];
+  try {
+    const token = localStorage.getItem("token");
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    
+    const { data } = await axios.get(`${API_BASE_URL}/api/supply`, config);
+    const supplyData = data.data || [];
 
-      const totalTons = data.reduce((acc, curr) => acc + curr.quantity, 0);
-      const activeUnits = data.filter(order => order.assignedTruck && order.status !== 'DELIVERED').length;
+    const totalTons = supplyData.reduce((acc, curr) => acc + (curr.quantity || 0), 0);
+    const activeUnits = supplyData.filter(order => order.assignedTruck && order.status !== 'DELIVERED').length;
 
-      // Batching state updates
-      setActiveOrders(data);
-      setStats(prev => ({
-        ...prev,
-        tonnage: totalTons,
-        trucks: activeUnits,
-      }));
-      setLoading(false);
-    } catch (err) {
-      console.error("Industrial Terminal Link Failure:", err);
-      setLoading(false);
-    }
-  }, []);
+    // React 18+ will batch these, but updating everything in one go is safest
+    setActiveOrders(supplyData);
+    setStats({
+      tonnage: totalTons,
+      trucks: activeUnits,
+    });
+  } catch (err) {
+    console.error("Industrial Terminal Link Failure:", err);
+  } finally {
+    // This ensures loading is ONLY turned off after the data is processed
+    setLoading(false);
+  }
+}, []);
+
 
   useEffect(() => {
     fetchMillerData();

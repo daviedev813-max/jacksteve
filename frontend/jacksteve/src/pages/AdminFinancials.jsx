@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+const API_BASE_URL = "https://jacksteve.onrender.com";
 
 const AdminFinancials = () => {
   const [missions, setMissions] = useState([]);
@@ -14,8 +15,8 @@ const AdminFinancials = () => {
 
         // 🚀 FETCH BOTH: Farmer Harvests AND Miller Supply Requests
         const [farmerRes, millerRes] = await Promise.all([
-          axios.get("/api/farmers", config),
-          axios.get("/api/supply", config)
+          axios.get(`${API_BASE_URL}/api/farmers`, config),
+          axios.get(`${API_BASE_URL}/api/supply`, config)
         ]);
 
         // 1. Map Farmer Missions (Per Bag Logic)

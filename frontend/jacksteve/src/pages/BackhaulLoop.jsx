@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom"; // For the 'Back' feature
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 
 const BackhaulLoop = () => {
   const [opportunities, setOpportunities] = useState([]);
@@ -10,18 +12,25 @@ const BackhaulLoop = () => {
 
   // 🛰️ STABILIZED FETCH
   const fetchBackhaul = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("/api/supply/backhaul-opportunities", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setOpportunities(res.data.data);
-      setLoading(false);
-    } catch (err) {
-      console.error("Backhaul Link Failure", err);
-      setLoading(false);
+  const token = localStorage.getItem("token");
+  if (!token) return; // Don't even try the request if no token exists
+
+  try {
+    const res = await axios.get(`${API_BASE_URL}/api/supply/backhaul-opportunities`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setOpportunities(res.data.data || []);
+  } catch (err) {
+    console.error("Backhaul Link Failure", err);
+    // If it's a 401, you might want to redirect to login
+    if (err.response?.status === 401) {
+       // Optional: window.location.href = '/login';
     }
-  }, []);
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
 
   useEffect(() => {
     fetchBackhaul();

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 const HarvestModal = ({ onHarvestLogged }) => {
   const [formData, setFormData] = useState({
     maizeQuantity: "",
@@ -23,7 +25,7 @@ const HarvestModal = ({ onHarvestLogged }) => {
         phone: formData.phone
       };
 
-      await axios.post("/api/farmers/sell-maize", payload, {
+      await axios.post(`${API_BASE_URL}/api/farmers/sell-maize`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

@@ -6,6 +6,8 @@ import axios from "axios";
 import HarvestModal from "../components/HarvestModal";
 import FarmerReceipt from "../components/documents/FarmerReceipt";
 
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 const FarmerDashboard = () => {
   const [harvests, setHarvests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ const FarmerDashboard = () => {
     try {
       const token = localStorage.getItem("token");
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const res = await axios.get("/api/farmers", config);
+      const res = await axios.get(`${API_BASE_URL}/api/farmers`, config);
       const data = res.data.data;
 
       setHarvests(data);

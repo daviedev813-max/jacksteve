@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 
 const FinancialTerminal = () => {
   const [finances, setFinances] = useState([]);
@@ -15,8 +17,8 @@ const FinancialTerminal = () => {
         
         // Fetch specific Finance Stats & All Requests
         const [statsRes, requestsRes] = await Promise.all([
-          axios.get("/api/supply/finance-stats", config),
-          axios.get("/api/supply", config)
+          axios.get(`${API_BASE_URL}/api/supply/finance-stats`, config),
+          axios.get(`${API_BASE_URL}/api/supply`, config)
         ]);
 
         setStats(statsRes.data.data);

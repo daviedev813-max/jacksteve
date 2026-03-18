@@ -10,7 +10,7 @@ const FloatingSupport = () => {
 
       {/* Main Pulse Button */}
       <a 
-        href="tel:+254700000000" 
+        href="tel:+254 796 622480" 
         className="flex items-center justify-center w-16 h-16 bg-primary rounded-2xl shadow-[0_20px_50px_rgba(38,222,129,0.4)] border-2 border-white/20 hover:scale-110 active:scale-95 transition-all duration-300 relative group"
       >
         {/* Animated Rings for Urgency */}

@@ -14,6 +14,9 @@ import AdminDispatchControl from "./AdminDispatchControl";
 // Leaflet Icon Fix
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+const API_BASE_URL = "https://jacksteve.onrender.com";
+
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
@@ -29,22 +32,33 @@ const AdminFleetDashboard = () => {
   const [activeTab, setActiveTab] = useState("LIVE_OPS");
   const [selectedHarvest, setSelectedHarvest] = useState(null);
 
-  const fetchCommandData = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      const [fleetRes, harvestRes] = await Promise.all([
-        axios.get("/api/fleet/status", config),
-        axios.get("/api/farmers", config),
-      ]);
-      setFleet(fleetRes.data.data);
-      setQueue(harvestRes.data.data.filter((h) => h.status === "PENDING_PICKUP" || h.status === "PENDING_DISPATCH"));
-      setLoading(false);
-    } catch (err) {
-      console.error("Command Link Failure:", err);
-      setLoading(false);
-    }
-  }, []);
+ const fetchCommandData = useCallback(async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    
+    const [fleetRes, harvestRes] = await Promise.all([
+      axios.get(`${API_BASE_URL}/api/fleet/status`, config),
+      // Use the absolute URL here too!
+      axios.get(`${API_BASE_URL}/api/farmers`, config),
+    ]);
+
+    // React 18+ batches these, but if you're on an older version or 
+    // want to be explicit, updates should happen together.
+    const filteredQueue = harvestRes.data.data.filter(
+      (h) => h.status === "PENDING_PICKUP" || h.status === "PENDING_DISPATCH"
+    );
+
+    setFleet(fleetRes.data.data);
+    setQueue(filteredQueue);
+  } catch (err) {
+    console.error("Command Link Failure:", err);
+  } finally {
+    // Move setLoading here so it only triggers once at the end
+    setLoading(false);
+  }
+}, []);
+
 
   useEffect(() => {
     fetchCommandData();
@@ -60,7 +74,7 @@ const AdminFleetDashboard = () => {
   const confirmDeployment = async (truckId) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.post("/api/fleet/assign", 
+      await axios.post(`${API_BASE_URL}/api/fleet/assign`, 
         { truckId, harvestId: selectedHarvest }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );

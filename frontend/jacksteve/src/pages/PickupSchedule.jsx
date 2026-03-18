@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+const API_BASE_URL = "https://jacksteve.onrender.com";
 
 const PickupSchedule = () => {
   const [pickups, setPickups] = useState([]);
@@ -9,7 +10,7 @@ const PickupSchedule = () => {
     const fetchPickups = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("/api/farmers", {
+        const res = await axios.get(`${API_BASE_URL}/api/farmers`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         // Filter for active logistics only
