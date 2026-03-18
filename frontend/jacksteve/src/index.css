@@ -36,3 +36,42 @@
   --radius-field: 0.4rem;
   --border-btn: 2px; /* Thicker borders for an 'industrial' feel */
 }
+/* index.css */
+
+/* Logistics Ticker */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); } /* Moves exactly half (one full set) */
+}
+
+
+/* Alternating Phone Numbers */
+@keyframes slide-up-phone {
+  0%, 40% { transform: translateY(0%); }
+  50%, 90% { transform: translateY(-50%); }
+  100% { transform: translateY(0%); }
+}
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 30s linear infinite; /* 30s is a professional 'slow' speed */
+}
+
+
+.animate-phone-slide {
+  display: flex;
+  flex-direction: column;
+  animation: slide-up-phone 7s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* index.css */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

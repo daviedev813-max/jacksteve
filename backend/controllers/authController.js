@@ -157,57 +157,63 @@ export const verifyEmail = async (req, res) => {
 // @route   POST /api/auth/login
 export const loginUser = async (req, res) => {
   try {
-    // 1. Get the requested role from the frontend switcher (FARMER or MILLER)
     const { email, password, role } = req.body;
 
-    // 2. Find User by Email
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    // 1. Find user
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
+    });
 
-    // 3. Validate Credentials
-    if (user && (await user.matchPassword(password))) {
-      // 4. ROLE INTEGRITY CHECK: Prevents Farmer from entering Miller Portal
-      // We check if the database role matches the role they selected on the login page
-      if (role && user.role.toUpperCase() !== role.toUpperCase()) {
-        return res.status(401).json({
-          success: false,
-          message: `ACCESS DENIED: This account is registered as a ${user.role}. Please switch your selection.`,
-        });
-      }
-
-      // 5. SECURITY GATE: Block unverified accounts
-      if (!user.isVerified) {
-        return res.status(401).json({
-          success: false,
-          message:
-            "TERMINAL INACTIVE: Please verify your email to unlock access.",
-        });
-      }
-
-      // 6. Dispatch Access Token & Profile Data
-      console.log(`[ACCESS GRANTED]: ${user.name} (${user.role}) online.`);
-
-      return res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
-      });
-    } else {
+    // 2. Validate credentials
+    if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({
         success: false,
         message: "INVALID CREDENTIALS: System Access Denied.",
       });
     }
+
+    // 3. ROLE CHECK (normalized)
+    if (role) {
+      const requestedRole = role.toUpperCase();
+      const actualRole = user.role.toUpperCase();
+
+      // Admin can access everything (optional logic)
+      if (actualRole !== "ADMIN" && actualRole !== requestedRole) {
+        return res.status(403).json({
+          success: false,
+          message: `ACCESS DENIED: This account is registered as ${user.role}.`,
+        });
+      }
+    }
+
+    // 4. Verification check
+    if (!user.isVerified) {
+      return res.status(401).json({
+        success: false,
+        message:
+          "TERMINAL INACTIVE: Please verify your email to unlock access.",
+      });
+    }
+
+    // 5. Success response
+    console.log(`[ACCESS GRANTED]: ${user.name} (${user.role}) online.`);
+
+    return res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user._id),
+    });
   } catch (error) {
     console.error("LOGIN_SYSTEM_CRASH:", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal Terminal Error during Authentication.",
     });
   }
 };
-
 // @desc Forgotten Password - Dispatch Reset Token
 export const forgotPassword = async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
@@ -220,7 +226,7 @@ export const forgotPassword = async (req, res) => {
   // Create reset URL (Adjust frontend URL as needed)
   // authController.js
   const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
-const resetUrl = `${frontendURL}/login?view=reset&token=${resetToken}`;
+  const resetUrl = `${frontendURL}/login?view=reset&token=${resetToken}`;
   try {
     await sendEmail({
       email: user.email,

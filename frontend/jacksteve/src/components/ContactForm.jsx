@@ -23,7 +23,9 @@ const ContactForm = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-[10px] font-black text-secondary uppercase tracking-[0.3em] mb-1">Direct Comms</span>
-              <p className="font-black italic text-lg uppercase">+254 700 000 000</p>
+              <p className="font-black italic text-lg uppercase">+254 796 622480</p>
+              
+              <p className="font-black italic text-lg uppercase">+254 725 239307</p>
             </div>
           </div>
         </div>
