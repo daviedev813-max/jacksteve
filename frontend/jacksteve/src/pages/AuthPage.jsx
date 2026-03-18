@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom"; // [ADDED useLocation]
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+
 const API_BASE_URL = "https://jacksteve.onrender.com";
+
 const AuthPage = ({ user, onLogin, onLogout }) => {
   const [view, setView] = useState("login");
   const [role, setRole] = useState("farmer");
@@ -23,7 +25,8 @@ const AuthPage = ({ user, onLogin, onLogout }) => {
   // 1. REDIRECT FIX (Keep as is)
   useEffect(() => {
     if (user?.authenticated && user?.role !== "guest") {
-      const target = user.role === "admin" ? "/admin/fleet" : `/${user.role}-portal`;
+      const target =
+        user.role === "admin" ? "/admin/fleet" : `/${user.role}-portal`;
       navigate(target);
     }
   }, [user, navigate]);
@@ -51,9 +54,9 @@ const AuthPage = ({ user, onLogin, onLogout }) => {
       let response;
       if (view === "login") {
         response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
-          email: formData.email,
+          email: formData.email.toLowerCase().trim(),
           password: formData.password,
-          role: role.toUpperCase(), // Ensure role is sent for integrity check
+          role: role.toUpperCase(), // Your schema uses ["FARMER", "MILLER", "ADMIN"]
         });
       } else if (view === "register") {
         await axios.post(`${API_BASE_URL}/api/auth/register`, {
@@ -66,23 +69,28 @@ const AuthPage = ({ user, onLogin, onLogout }) => {
         return;
       } else if (view === "verify") {
         response = await axios.post(`${API_BASE_URL}/api/auth/verify`, {
-          email: formData.email,
+          email: formData.email.toLowerCase().trim(),
           otp: formData.otp,
         });
       } else if (view === "forgot") {
         await axios.post(`${API_BASE_URL}/api/auth/forgot-password`, {
-          email: formData.email,
+          email: formData.email.toLowerCase().trim(),
         });
-        setSuccessMsg("RESET TOKEN DISPATCHED. REDIRECTING TO RESET TERMINAL...");
+        setSuccessMsg(
+          "RESET TOKEN DISPATCHED. REDIRECTING TO RESET TERMINAL...",
+        );
         // Auto-switch to reset view so user can paste if link fails
-        setTimeout(() => setView("reset"), 2500); 
+        setTimeout(() => setView("reset"), 2500);
         setLoading(false);
         return;
       } else if (view === "reset") {
         // [UPDATED]: Matches the router.put("/reset-password/:token") path
-        response = await axios.put(`${API_BASE_URL}/api/auth/reset-password/${formData.resetToken}`, {
-          password: formData.password,
-        });
+        response = await axios.put(
+          `${API_BASE_URL}/api/auth/reset-password/${formData.resetToken}`,
+          {
+            password: formData.password,
+          },
+        );
         setSuccessMsg("PASSKEY UPDATED. RE-INITIALIZING LOGIN...");
         setTimeout(() => setView("login"), 2000);
         setLoading(false);
@@ -95,12 +103,16 @@ const AuthPage = ({ user, onLogin, onLogout }) => {
         localStorage.setItem("userRole", data.role.toLowerCase());
         setSuccessMsg("ACCESS GRANTED. INITIALIZING TERMINAL...");
         onLogin(data);
-        const target = data.role === "ADMIN" ? "/admin/fleet" : `/${data.role.toLowerCase()}-portal`;
+        const target =
+          data.role === "ADMIN"
+            ? "/admin/fleet"
+            : `/${data.role.toLowerCase()}-portal`;
         setTimeout(() => navigate(target, { replace: true }), 1200);
       }
-
     } catch (err) {
-      setError(err.response?.data?.message || "UPLINK ERROR: CONNECTION REFUSED");
+      setError(
+        err.response?.data?.message || "UPLINK ERROR: CONNECTION REFUSED",
+      );
     } finally {
       setLoading(false);
     }

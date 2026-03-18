@@ -45,8 +45,9 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+const cleanEmail = email.toLowerCase().trim();
     // 1. Check if user already exists
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email: cleanEmail });
 
     if (user) {
       // IF FULLY VERIFIED -> BLOCK (Actual Duplicate)
@@ -216,7 +217,12 @@ export const loginUser = async (req, res) => {
 };
 // @desc Forgotten Password - Dispatch Reset Token
 export const forgotPassword = async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
+  // In registerUser
+const cleanEmail = email.toLowerCase().trim();
+
+// ... then use cleanEmail to create the user
+
+  const user = await User.findOne({ email: req.body.cleanEmail });
   if (!user)
     return res.status(404).json({ message: "Identity not found in database" });
 
