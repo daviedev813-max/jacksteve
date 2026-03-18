@@ -45,8 +45,18 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-const cleanEmail = email.toLowerCase().trim();
-    // 1. Check if user already exists
+    // 1. Validation: Ensure all critical fields exist
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({
+        message: "TERMINAL ERROR: All fields (Name, Email, Password, Role) are required.",
+      });
+    }
+
+    // 2. NORMALIZE: Ensure email is lowercase and trimmed
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanRole = role.toUpperCase().trim(); // Matches your Schema Enum: "FARMER", "MILLER", "ADMIN"
+
+    // 3. Check if user already exists
     let user = await User.findOne({ email: cleanEmail });
 
     if (user) {
@@ -57,43 +67,50 @@ const cleanEmail = email.toLowerCase().trim();
         });
       }
 
-      // IF UNVERIFIED -> RE-SYNC (The "Cleanup" Logic)
-      console.log(
-        `[RE-SYNCING]: Refreshing terminal for unverified user: ${email}`,
-      );
+      // IF UNVERIFIED -> RE-SYNC (Update details and send new OTP)
+      console.log(`[RE-SYNCING]: Refreshing terminal for: ${cleanEmail}`);
       user.name = name;
-      user.password = password;
-      user.role = role;
+      user.password = password; // Middleware in User.js will re-hash this
+      user.role = cleanRole;
     } else {
-      // IF NEW -> CREATE PROFILE
-      user = new User({ name, email, password, role });
+      // IF NEW -> CREATE PROFILE with cleaned data
+      user = new User({ 
+        name, 
+        email: cleanEmail, 
+        password, 
+        role: cleanRole 
+      });
     }
 
-    // 2. Generate/Refresh the OTP
+    // 4. Generate/Refresh the OTP (Using your User Model method)
     const otp = user.getVerificationOtp();
     await user.save();
 
-    // 3. Dispatch Activation Email
+    // 5. Dispatch Activation Email
     try {
       await sendEmail({
         email: user.email,
         subject: "JACKSTEVE | TERMINAL ACTIVATION CODE",
-        html: `<div style="font-family:sans-serif; border-top:4px solid #FFCC00; padding:20px;">
-                <h2 style="font-style:italic;">IDENTITY VERIFICATION</h2>
-                <p>Your activation code is: <b style="font-size:24px; color:#1a1a1a;">${otp}</b></p>
-                <p>Enter this code in the terminal to activate your partner profile.</p>
-                <p style="font-size:10px; color:#888;">Note: This replaces any previous code sent.</p>
-              </div>`,
+        html: `
+          <div style="font-family:sans-serif; border-top:4px solid #FFCC00; padding:20px; background-color:#f9f9f9;">
+            <h2 style="font-style:italic; color:#1a1a1a;">IDENTITY VERIFICATION</h2>
+            <p>Welcome to the Jacksteve Logistics Loop.</p>
+            <p>Your activation code is: <b style="font-size:28px; color:#000; letter-spacing:2px;">${otp}</b></p>
+            <p>Enter this code in the terminal to activate your partner profile.</p>
+            <p style="font-size:10px; color:#888; margin-top:20px; border-top:1px solid #ddd; padding-top:10px;">
+              Note: This replaces any previous code sent. Code expires in 10 minutes.
+            </p>
+          </div>`,
       });
 
       return res.status(201).json({
-        message: "Account details updated. New verification code dispatched.",
+        message: "Partner profile initialized. Activation code dispatched to email.",
       });
     } catch (emailError) {
       console.error("EMAIL_DISPATCH_ERROR:", emailError);
+      // We still return 201 because the user was saved, but we warn them about the email failure
       return res.status(201).json({
-        message:
-          "Profile updated, but email dispatch failed. Verify server credentials.",
+        message: "Profile saved, but email dispatch failed. Check SMTP terminal settings.",
       });
     }
   } catch (error) {
@@ -106,48 +123,51 @@ const cleanEmail = email.toLowerCase().trim();
 
 // @desc    Verify OTP & Activate Partner Terminal
 // @route   POST /api/auth/verify
+// @desc    Verify OTP & Activate Partner Terminal
+// @route   POST /api/auth/verify
 export const verifyEmail = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    // 1. Find the user with matching email, OTP, and check if OTP has not expired
+    // 1. NORMALIZE: Ensure email is lowercase/trimmed and OTP is a string
+    const cleanEmail = email ? email.toLowerCase().trim() : "";
+    const cleanOtp = otp ? otp.toString().trim() : "";
+
+    // 2. Find the user with matching normalized email and active OTP
     const user = await User.findOne({
-      email,
-      otpCode: otp,
-      otpExpire: { $gt: Date.now() },
+      email: cleanEmail,
+      otpCode: cleanOtp,
+      otpExpire: { $gt: Date.now() }, // Check if code is still valid
     });
 
-    // 2. If no user found or code expired
+    // 3. Handle failure (This returns the 400 error you saw)
     if (!user) {
       return res.status(400).json({
         success: false,
-        message:
-          "Invalid or Expired Activation Code. Please request a new one.",
+        message: "INVALID OR EXPIRED CODE: Verification failed. Request a new one.",
       });
     }
 
-    // 3. Update User Status to Active
+    // 4. Update User Status to Active
     user.isVerified = true;
-    user.otpCode = undefined; // Clear the code so it can't be used again
-    user.otpExpire = undefined; // Clear the expiry
+    user.otpCode = undefined; 
+    user.otpExpire = undefined; 
     await user.save();
 
-    // 4. Return Session Data (For Auto-Login)
-    res.status(200).json({
+    // 5. Return Session Data (For Auto-Login)
+    return res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id), // Direct access token
+      token: generateToken(user._id), 
       message: "TERMINAL ACTIVATED: ACCESS GRANTED",
     });
 
-    console.log(
-      `[TERMINAL ACTIVATED]: ${user.name} (${user.role}) is now online.`,
-    );
+    console.log(`[TERMINAL ACTIVATED]: ${user.name} (${user.role}) is now online.`);
   } catch (error) {
     console.error("VERIFICATION_SYSTEM_ERROR:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Internal Terminal Error during Activation.",
     });
@@ -160,12 +180,20 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password, role } = req.body;
 
-    // 1. Find user
+    // 1. Validation: Ensure fields exist before processing
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "TERMINAL ERROR: Email and Password are required.",
+      });
+    }
+
+    // 2. Find user (Normalized Search)
     const user = await User.findOne({
       email: email.toLowerCase().trim(),
     });
 
-    // 2. Validate credentials
+    // 3. Validate credentials
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({
         success: false,
@@ -173,12 +201,13 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // 3. ROLE CHECK (normalized)
+    // 4. ROLE INTEGRITY CHECK
+    // If your frontend sends a role, we verify it matches the DB
     if (role) {
-      const requestedRole = role.toUpperCase();
+      const requestedRole = role.toString().toUpperCase().trim();
       const actualRole = user.role.toUpperCase();
 
-      // Admin can access everything (optional logic)
+      // Admins are bypass-authorized, others must match exactly
       if (actualRole !== "ADMIN" && actualRole !== requestedRole) {
         return res.status(403).json({
           success: false,
@@ -187,16 +216,15 @@ export const loginUser = async (req, res) => {
       }
     }
 
-    // 4. Verification check
+    // 5. Verification check
     if (!user.isVerified) {
       return res.status(401).json({
         success: false,
-        message:
-          "TERMINAL INACTIVE: Please verify your email to unlock access.",
+        message: "TERMINAL INACTIVE: Please verify your email to unlock access.",
       });
     }
 
-    // 5. Success response
+    // 6. Success response
     console.log(`[ACCESS GRANTED]: ${user.name} (${user.role}) online.`);
 
     return res.json({
@@ -206,15 +234,16 @@ export const loginUser = async (req, res) => {
       role: user.role,
       token: generateToken(user._id),
     });
+    
   } catch (error) {
     console.error("LOGIN_SYSTEM_CRASH:", error);
-
     return res.status(500).json({
       success: false,
       message: "Internal Terminal Error during Authentication.",
     });
   }
 };
+
 // @desc Forgotten Password - Dispatch Reset Token
 export const forgotPassword = async (req, res) => {
   // In registerUser
