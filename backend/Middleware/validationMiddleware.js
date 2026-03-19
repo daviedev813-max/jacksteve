@@ -13,26 +13,9 @@ export const validateAuth = async (req, res, next) => {
             message: "Credentials required for System Access" 
         });
     }
-    
-    // 2. [DEEP VALIDATION] Check if Email actually exists
-    try {
-        const resDeep = await validate(email);
 
-        if (!resDeep.valid) {
-            // This catches: typos, fake domains, and non-existent inboxes
-            return res.status(400).json({ 
-                success: false, 
-                message: `Invalid Terminal Email: ${resDeep.reason || "Inbox does not exist."}` 
-            });
-        }
-    } catch (error) {
-        // Fallback: If the validation service is down, allow the request 
-        // but log the warning for the Jacksteve Admin.
-        console.warn("Deep Validation skipped due to network timeout.");
-    }
-
-
-    // 2. [NEW] Validate Email Format
+    // 2. [SIMPLIFIED] Validate Email Format only
+    // Deep validation (SMTP check) is blocked by Render Free Tier
     if (!emailRegex.test(email)) {
         return res.status(400).json({ 
             success: false, 
@@ -40,7 +23,7 @@ export const validateAuth = async (req, res, next) => {
         });
     }
 
-    // 3. [NEW] Check Password Strength (Optional but recommended)
+    // 3. Validate Password Strength
     if (password.length < 6) {
         return res.status(400).json({ 
             success: false, 
