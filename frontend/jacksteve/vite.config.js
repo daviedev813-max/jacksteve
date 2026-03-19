@@ -15,7 +15,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:10000',
+        target: 'https://jacksteve.onrender.com',
         changeOrigin: true,
         secure: false,
       }

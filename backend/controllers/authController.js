@@ -8,22 +8,18 @@ const generateToken = (id) => {
 };
 
 // Tactical Transporter Setup - High Reliability Version
+// Internal Utility: Not exported to routes
 const sendEmail = async (options) => {
+  // 1. Create Transporter using the 'gmail' service shortcut
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Use SSL for Port 465
+    service: 'gmail', 
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER, // Your Gmail address
+      pass: process.env.EMAIL_PASS, // Your 16-character App Password
     },
-    tls: {
-      rejectUnauthorized: false, // Prevents local certificate block
-    },
-    debug: true, // Show handshake in console
-    logger: true, // Log every step in terminal
   });
 
+  // 2. Define Mail Options
   const mailOptions = {
     from: `"Jacksteve Logistics" <${process.env.EMAIL_USER}>`,
     to: options.email,
@@ -31,13 +27,15 @@ const sendEmail = async (options) => {
     html: options.html,
   };
 
+  // 3. Attempt Dispatch
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log(`[EMAIL DISPATCHED]: ID ${info.messageId}`);
+    console.log(`[SMTP SUCCESS]: Dispatch to ${options.email} | ID: ${info.messageId}`);
     return info;
   } catch (error) {
-    console.error("[SMTP ERROR]: Dispatch Failed", error);
-    throw error;
+    // We log the error but throw it so the controller knows the email failed
+    console.error("[SMTP CRITICAL FAILURE]:", error.message);
+    throw error; 
   }
 };
 
