@@ -2,42 +2,37 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import { Resend } from 'resend';
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
-// Tactical Transporter Setup - High Reliability Version
-// Internal Utility: Not exported to routes
 const sendEmail = async (options) => {
-  // 1. Create Transporter using the 'gmail' service shortcut
-  const transporter = nodemailer.createTransport({
-    service: 'gmail', 
-    auth: {
-      user: process.env.EMAIL_USER, // Your Gmail address
-      pass: process.env.EMAIL_PASS, // Your 16-character App Password
-    },
-  });
+  // 2. Initialize INSIDE the function so process.env is ready
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
-  // 2. Define Mail Options
-  const mailOptions = {
-    from: `"Jacksteve Logistics" <${process.env.EMAIL_USER}>`,
-    to: options.email,
-    subject: options.subject,
-    html: options.html,
-  };
-
-  // 3. Attempt Dispatch
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`[SMTP SUCCESS]: Dispatch to ${options.email} | ID: ${info.messageId}`);
-    return info;
-  } catch (error) {
-    // We log the error but throw it so the controller knows the email failed
-    console.error("[SMTP CRITICAL FAILURE]:", error.message);
-    throw error; 
+    const { data, error } = await resend.emails.send({
+      from: 'Jacksteve Logistics <onboarding@resend.dev>',
+      to: options.email, 
+      subject: options.subject,
+      html: options.html,
+    });
+
+    if (error) {
+      console.error("[RESEND ERROR]:", error);
+      throw new Error(error.message);
+    }
+
+    console.log(`[EMAIL DISPATCHED]: ID ${data.id}`);
+    return data;
+  } catch (err) {
+    console.error("[SYSTEM ERROR]: Email Dispatch Failed", err.message);
+    throw err;
   }
 };
+
 
 export const registerUser = async (req, res) => {
   try {
