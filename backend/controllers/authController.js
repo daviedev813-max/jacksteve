@@ -4,7 +4,12 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { Resend } from 'resend';
 
+// MUST be defined at the top level of authController.js
 const generateToken = (id) => {
+  if (!process.env.JWT_SECRET) {
+    console.error("CRITICAL: JWT_SECRET is missing from Environment Variables");
+    return null;
+  }
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
@@ -146,8 +151,18 @@ export const verifyEmail = async (req, res) => {
     user.otpCode = undefined; 
     user.otpExpire = undefined; 
     await user.save();
+    
+    // Log BEFORE the return
+    console.log(`[TERMINAL ACTIVATED]: ${user.name} (${user.role}) is now online.`);
 
-    // 5. Return Session Data (For Auto-Login)
+    // Return Session Data (For Auto-Login)
+    const token = generateToken(user._id);
+    
+    if (!token) {
+        throw new Error("Token generation failed: Check JWT_SECRET");
+    }
+
+    //  Return Session Data (For Auto-Login)
     return res.status(200).json({
       _id: user._id,
       name: user.name,
@@ -157,7 +172,6 @@ export const verifyEmail = async (req, res) => {
       message: "TERMINAL ACTIVATED: ACCESS GRANTED",
     });
 
-    console.log(`[TERMINAL ACTIVATED]: ${user.name} (${user.role}) is now online.`);
   } catch (error) {
     console.error("VERIFICATION_SYSTEM_ERROR:", error);
     return res.status(500).json({
