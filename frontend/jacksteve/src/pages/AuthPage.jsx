@@ -323,59 +323,60 @@ const AuthPage = ({ user, onLogin, onLogout }) => {
             </button>
 
             {/* --- SECONDARY NAVIGATION --- */}
-<div className="mt-10 pt-8 border-t border-slate-100">
-  {view === "login" ? (
-    <div className="flex flex-col gap-6 items-center">
-      {/* Forgot Password Link */}
-      <button
-        type="button"
-        onClick={() => setView("forgot")}
-        className="text-[12px] font-medium text-slate-500 hover:text-slate-900 transition-colors"
-      >
-        Forgot your password?
-      </button>
+            <div className="mt-10 pt-8 border-t border-slate-100">
+              {view === "login" ? (
+                <div className="flex flex-col gap-6 items-center">
+                  {/* Forgot Password Link */}
+                  <button
+                    type="button"
+                    onClick={() => setView("forgot")}
+                    className="text-[12px] font-medium text-slate-500 hover:text-slate-900 transition-colors"
+                  >
+                    Forgot your password?
+                  </button>
 
-      {/* Register Link with a cleaner look */}
-      <div className="flex items-center gap-2 text-[13px]">
-        <span className="text-slate-400">Don't have an account?</span>
-        <button
-          type="button"
-          onClick={() => setView("register")}
-          className="font-bold text-slate-900 hover:underline underline-offset-4"
-        >
-          Sign up
-        </button>
-      </div>
-    </div>
-  ) : (
-    /* Return to Login */
-    <button
-      type="button"
-      onClick={() => setView("login")}
-      className="w-full flex items-center justify-center gap-3 py-2 group transition-all"
-    >
-      <div className="flex items-center justify-center w-6 h-6 rounded-full border border-slate-200 text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
-        <svg 
-          xmlns="http://www.w3.org" 
-          width="14" 
-          height="14" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-        >
-          <path d="m15 18-6-6 6-6"/>
-        </svg>
-      </div>
-      <span className="text-[12px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-900">
-        Back to login
-      </span>
-    </button>
-  )}
-</div>
-
+                  {/* Register Link with a cleaner look */}
+                  <div className="flex items-center gap-2 text-[13px]">
+                    <span className="text-slate-400">
+                      Don't have an account?
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setView("register")}
+                      className="font-bold text-slate-900 hover:underline underline-offset-4"
+                    >
+                      Sign up
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Return to Login */
+                <button
+                  type="button"
+                  onClick={() => setView("login")}
+                  className="w-full flex items-center justify-center gap-3 py-2 group transition-all"
+                >
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full border border-slate-200 text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
+                    <svg
+                      xmlns="http://www.w3.org"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="m15 18-6-6 6-6" />
+                    </svg>
+                  </div>
+                  <span className="text-[12px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-900">
+                    Back to login
+                  </span>
+                </button>
+              )}
+            </div>
           </form>
         </div>
       </div>

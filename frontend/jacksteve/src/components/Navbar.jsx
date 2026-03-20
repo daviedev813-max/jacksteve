@@ -93,56 +93,55 @@ const Navbar = ({ user, onLogout }) => {
 
   return (
     <header className="sticky top-0 z-50 w-full flex flex-col bg-base-100 shadow-sm">
-     {/* 1. TOP UTILITY BAR (Email + 2 Sliding Numbers + Ticker) */}
-<div
-  className={`bg-orange-600 text-white px-2 md:px-8 flex justify-between items-center transition-all duration-500 overflow-hidden ${
-    scrolled ? "h-0 opacity-0" : "h-10 opacity-100"
-  }`}
->
-  {/* Left Side: Contact Info (Now always adjacent) */}
-  <div className="flex items-center flex-nowrap gap-3 md:gap-4 text-[8px] sm:text-[10px] font-black uppercase tracking-tighter sm:tracking-widest overflow-x-auto no-scrollbar">
-    
-    {/* Email - Always Visible */}
-    <a
-      href="mailto:info@jacksteve.com"
-      className="hover:text-neutral-200 transition shrink-0 flex items-center gap-1"
-    >
-      <span className="opacity-70 font-normal">@</span> INFO@JACKSTEVE.COM
-    </a>
-    
-    <span className="opacity-30 shrink-0">|</span>
+      {/* 1. TOP UTILITY BAR (Email + 2 Sliding Numbers + Ticker) */}
+      <div
+        className={` bg-orange-600 text-white px-2 md:px-8 flex justify-between items-center transition-all duration-500 overflow-hidden ${
+          scrolled ? "h-0 opacity-0" : "h-10 opacity-100"
+        }`}
+      >
+        {/* Left Side: Contact Info (Now always adjacent) */}
+        <div className="flex items-center flex-nowrap gap-3 md:gap-4 text-[8px] sm:text-[10px] font-black uppercase tracking-tighter sm:tracking-widest overflow-x-auto no-scrollbar">
+          {/* Email - Always Visible */}
+          <a
+            href="mailto:info@jacksteve.com"
+            className="hover:text-neutral-200 transition shrink-0 flex items-center gap-1"
+          >
+            <span className="opacity-70 font-normal">@</span> INFO@JACKSTEVE.COM
+          </a>
 
-    {/* TWO NUMBERS ALTERNATING */}
-    <div className="h-5 overflow-hidden relative w-40 sm:w-64 shrink-0">
-      <div className="animate-phone-slide">
-        <a
-          href="tel:+254796622480"
-          className="h-5 flex items-center hover:text-neutral-200 transition whitespace-nowrap"
-        >
-          <span className="opacity-70 mr-1">DIR:</span> +254 796 622480
-        </a>
-        <a
-          href="tel:+254725239307"
-          className="h-5 flex items-center hover:text-neutral-200 transition whitespace-nowrap"
-        >
-          <span className="opacity-70 mr-1">FIN:</span> +254 725 239307
-        </a>
+          <span className="opacity-30 shrink-0">|</span>
+
+          {/* TWO NUMBERS ALTERNATING */}
+          <div className="h-5 overflow-hidden relative w-40 sm:w-64 shrink-0">
+            <div className="animate-phone-slide">
+              <a
+                href="tel:+254796622480"
+                className="h-5 flex items-center hover:text-neutral-200 transition whitespace-nowrap"
+              >
+                <span className="opacity-70 mr-1">DIR:</span> +254 796 622480
+              </a>
+              <a
+                href="tel:+254725239307"
+                className="h-5 flex items-center hover:text-neutral-200 transition whitespace-nowrap"
+              >
+                <span className="opacity-70 mr-1">FIN:</span> +254 725 239307
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side: Ticker (Hidden on small screens to prioritize contact info) */}
+        <div className="hidden lg:block w-1/2 overflow-hidden relative border-l border-white/20 ml-6">
+          <div className="animate-marquee whitespace-nowrap py-1">
+            <span className="inline-block font-black uppercase tracking-[0.2em] text-[10px] text-white pr-20">
+              ● STATUS: FLEET OPTIMAL ● NETWORK: LIVE TRACKING ●
+            </span>
+            <span className="inline-block font-black uppercase tracking-[0.2em] text-[10px] text-white pr-20">
+              ● STATUS: FLEET OPTIMAL ● NETWORK: LIVE TRACKING ●
+            </span>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-
-  {/* Right Side: Ticker (Hidden on small screens to prioritize contact info) */}
-  <div className="hidden lg:block w-1/2 overflow-hidden relative border-l border-white/20 ml-6">
-    <div className="animate-marquee whitespace-nowrap py-1">
-      <span className="inline-block font-black uppercase tracking-[0.2em] text-[10px] text-white pr-20">
-        ● STATUS: FLEET OPTIMAL ● NETWORK: LIVE TRACKING ●
-      </span>
-      <span className="inline-block font-black uppercase tracking-[0.2em] text-[10px] text-white pr-20">
-        ● STATUS: FLEET OPTIMAL ● NETWORK: LIVE TRACKING ●
-      </span>
-    </div>
-  </div>
-</div>
 
       {/* 2. MAIN NAVBAR */}
       <div

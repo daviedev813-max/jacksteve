@@ -63,7 +63,7 @@ const Hero = () => {
         <div className="flex flex-col sm:flex-row gap-6 w-full max-w-2xl justify-center">
           {/* Primary Action for Millers */}
           <Link 
-            to="/services" 
+            to="/miller-portal" 
             className="group btn btn-secondary btn-lg rounded-2xl px-12 h-20 flex-1 border-none shadow-2xl shadow-secondary/20 hover:scale-105 transition-all"
           >
             <div className="flex flex-col items-center">
@@ -74,7 +74,7 @@ const Hero = () => {
 
           {/* Secondary Action for Farmers */}
           <Link 
-            to="/farmers" 
+            to="/farmer-portal" 
             className="group btn btn-primary btn-lg rounded-2xl px-12 h-20 flex-1 border-none shadow-2xl shadow-primary/20 hover:scale-105 transition-all"
           >
             <div className="flex flex-col items-center">
